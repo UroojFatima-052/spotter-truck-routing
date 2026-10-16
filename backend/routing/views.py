@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from .services.tomtom import geocode
 from .services.tomtom import geocode, get_truck_routes
+from .services.checkpoints import build_checkpoints
 
 @api_view(["GET"])
 def health(request):
@@ -37,6 +38,14 @@ def truck_routes(request):
     except ValueError:
         return Response({"error": "Weight must be a number"}, status=status.HTTP_400_BAD_REQUEST)
 
+    try:
+        interval = int(request.query_params.get("interval", "25"))
+    except ValueError:
+        interval = 0
+
+    if interval not in (10, 25, 50):
+        return Response({"error": "Interval must be 10, 25 or 50"}, status=status.HTTP_400_BAD_REQUEST)
+
     if not origin_query or not destination_query:
         return Response({"error": "Please provide origin and destination"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -49,14 +58,16 @@ def truck_routes(request):
     except requests.RequestException:
         return Response({"error": "Routing service is unavailable"}, status=status.HTTP_502_BAD_GATEWAY)
 
-    summaries = [
-        {
+    summaries = []
+    for route in routes:
+        checkpoints = build_checkpoints(route, interval)
+        summaries.append({
             "id": route["id"],
             "distance_miles": route["distance_miles"],
             "duration_hours": round(route["duration_s"] / 3600, 1),
             "arrival_time": route["arrival_time"],
-            "point_count": len(route["points"]),
-        }
-        for route in routes
-    ]
+            "checkpoint_count": len(checkpoints),
+            "first_checkpoints": checkpoints[:3],
+            "last_checkpoint": checkpoints[-1],
+        })
     return Response({"origin": origin, "destination": destination, "routes": summaries})
