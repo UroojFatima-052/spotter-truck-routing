@@ -7,7 +7,9 @@ from rest_framework.response import Response
 
 from .services.checkpoints import build_checkpoints
 from .services.tomtom import geocode, get_truck_routes
+from .services.risk import classify
 from .services.weather import get_forecasts, round_location, weather_at
+
 
 
 @api_view(["GET"])
@@ -76,6 +78,7 @@ def truck_routes(request):
         for stop in stops:
             forecast = forecasts[round_location(stop["lat"], stop["lon"])]
             stop["weather"] = weather_at(forecast, datetime.fromisoformat(stop["eta"]))
+            stop["risk"] = classify(stop["weather"], weight_lb)
 
     summaries = []
     for route in routes:
