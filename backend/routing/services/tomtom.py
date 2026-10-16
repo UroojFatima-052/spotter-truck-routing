@@ -133,6 +133,7 @@ def _simplify_route(index, route):
 
     return {
         "id": index,
+        "distance_m": summary["lengthInMeters"],
         "distance_miles": round(summary["lengthInMeters"] * MILES_PER_METER, 1),
         "duration_s": summary["travelTimeInSeconds"],
         "departure_time": summary["departureTime"],
