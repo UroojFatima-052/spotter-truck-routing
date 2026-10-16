@@ -27,3 +27,19 @@ def summarize_risk(checkpoints):
         "unknown_miles": round(unknown_miles, 1),
         "blocked": miles["No Travel"] > 0,
     }
+
+def rank_routes(routes):
+    """Best route first."""
+    return sorted(routes, key=_ranking_key)
+
+
+def _ranking_key(route):
+    summary = route["risk_summary"]
+    average = summary["average_risk"]
+    return (
+        summary["no_travel_miles"],
+        summary["severe_miles"],
+        summary["high_miles"],
+        average if average is not None else float("inf"),
+        route["duration_s"],
+    )
