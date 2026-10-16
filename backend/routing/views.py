@@ -1,11 +1,14 @@
+from datetime import datetime
+
 import requests
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .services.tomtom import geocode
-from .services.tomtom import geocode, get_truck_routes
 from .services.checkpoints import build_checkpoints
+from .services.tomtom import geocode, get_truck_routes
+from .services.weather import get_forecasts, round_location, weather_at
+
 
 @api_view(["GET"])
 def health(request):
@@ -42,7 +45,6 @@ def truck_routes(request):
         interval = int(request.query_params.get("interval", "25"))
     except ValueError:
         interval = 0
-
     if interval not in (10, 25, 50):
         return Response({"error": "Interval must be 10, 25 or 50"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -58,9 +60,26 @@ def truck_routes(request):
     except requests.RequestException:
         return Response({"error": "Routing service is unavailable"}, status=status.HTTP_502_BAD_GATEWAY)
 
+    checkpoints_by_route = {route["id"]: build_checkpoints(route, interval) for route in routes}
+
+    locations = [
+        round_location(stop["lat"], stop["lon"])
+        for stops in checkpoints_by_route.values()
+        for stop in stops
+    ]
+    try:
+        forecasts = get_forecasts(locations)
+    except requests.RequestException:
+        return Response({"error": "Weather service is unavailable"}, status=status.HTTP_502_BAD_GATEWAY)
+
+    for stops in checkpoints_by_route.values():
+        for stop in stops:
+            forecast = forecasts[round_location(stop["lat"], stop["lon"])]
+            stop["weather"] = weather_at(forecast, datetime.fromisoformat(stop["eta"]))
+
     summaries = []
     for route in routes:
-        checkpoints = build_checkpoints(route, interval)
+        checkpoints = checkpoints_by_route[route["id"]]
         summaries.append({
             "id": route["id"],
             "distance_miles": route["distance_miles"],
