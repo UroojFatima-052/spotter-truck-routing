@@ -18,7 +18,7 @@ def build_checkpoints(route, interval_miles):
     for i, mile in enumerate(markers):
         lat, lon = _point_at_mile(points, cumulative, mile)
         seconds = _seconds_at_mile(route, mile)
-        eta = (departure + timedelta(seconds=seconds)).astimezone(timezone.utc)
+        eta = (departure + timedelta(seconds=seconds)).astimezone(timezone.utc).replace(microsecond=0)
 
         previous_mile = markers[i - 1] if i > 0 else mile
         next_mile = markers[i + 1] if i < len(markers) - 1 else mile
