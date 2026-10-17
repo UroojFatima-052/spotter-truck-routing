@@ -1,0 +1,110 @@
+.route-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 24px 24px;
+}
+
+.cards-header h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.cards-header p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.route-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.route-card:hover {
+  border-color: var(--teal-600);
+}
+
+.route-card.selected {
+  border-color: var(--teal-800);
+  box-shadow: var(--shadow);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.route-name {
+  font-weight: 800;
+}
+
+.badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge.recommended {
+  background: var(--amber-soft);
+  color: #8a5a00;
+}
+
+.badge.blocked {
+  background: #fbe9ef;
+  color: var(--risk-notravel);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.stats div {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.risk-bar {
+  display: flex;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-alt);
+}
+
+.risk-figures {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
