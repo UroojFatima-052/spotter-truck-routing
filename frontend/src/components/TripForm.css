@@ -1,14 +1,14 @@
 .trip-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 22px 24px;
+  gap: 15px;
+  padding: 4px 22px 20px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
   flex: 1;
   min-width: 0;
 }
@@ -16,28 +16,35 @@
 .field-label {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .field input {
   width: 100%;
-  padding: 11px 13px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  background: var(--surface);
+  padding: 12px 14px;
+  border: 1px solid var(--field-line);
+  border-radius: 14px;
+  background: var(--field);
   color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: inset 0 1px 2px rgba(43, 49, 68, 0.05);
   transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field input[type='datetime-local'] {
+  font-size: 13px;
+  padding-right: 8px;
 }
 
 .field input:focus {
   outline: none;
-  border-color: var(--teal-600);
-  box-shadow: 0 0 0 4px rgba(27, 101, 117, 0.12);
+  border-color: var(--navy);
+  box-shadow: 0 0 0 4px var(--navy-soft);
 }
 
-/* From / To with the swap button between them */
 .places {
   position: relative;
   display: flex;
@@ -47,28 +54,31 @@
 
 .swap {
   position: absolute;
-  right: 12px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
-  width: 32px;
-  height: 32px;
-  border: 1.5px solid var(--line);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--glass-line);
   border-radius: 50%;
-  background: var(--surface);
-  color: var(--teal-700);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--navy);
   font-size: 15px;
   cursor: pointer;
-  transition: transform 0.2s, border-color 0.15s;
+  box-shadow: 0 6px 16px var(--shadow);
+  transition: transform 0.2s;
 }
 
 .swap:hover {
-  border-color: var(--teal-600);
   transform: translateY(-50%) rotate(180deg);
 }
 
 .row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
   gap: 12px;
 }
 
@@ -86,63 +96,70 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 13px;
-  color: var(--muted);
+  color: var(--faint);
 }
 
 .hint {
-  margin: -8px 0 0;
+  margin: -7px 0 0;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--faint);
 }
 
-/* 10 / 25 / 50 mi selector */
 .segmented {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  padding: 4px;
-  border-radius: 10px;
-  background: var(--surface-alt);
+  padding: 3px;
+  border: 1px solid var(--field-line);
+  border-radius: 14px;
+  background: var(--field);
 }
 
 .segmented button {
-  padding: 8px 0;
+  padding: 9px 0;
   border: none;
-  border-radius: 8px;
+  border-radius: 11px;
   background: transparent;
   color: var(--muted);
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
 }
 
 .segmented button.active {
-  background: var(--surface);
-  color: var(--teal-800);
-  box-shadow: 0 1px 4px rgba(6, 42, 53, 0.12);
+  background: #ffffff;
+  color: var(--navy);
+  box-shadow: 0 2px 8px var(--shadow);
 }
 
 .form-error {
   padding: 10px 12px;
-  border-radius: 10px;
-  background: #fdecec;
-  color: #a1282d;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 12px;
+  background: rgba(220, 38, 38, 0.08);
+  color: #b42318;
   font-size: 13px;
   font-weight: 600;
 }
 
 .submit {
-  padding: 13px;
-  border: none;
-  border-radius: 12px;
-  background: var(--teal-800);
-  color: white;
-  font-weight: 700;
+  min-height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--salmon), var(--salmon-deep));
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 800;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  box-shadow:
+    0 12px 28px var(--salmon-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: transform 0.1s, box-shadow 0.15s;
 }
 
 .submit:hover:not(:disabled) {
-  background: var(--teal-700);
+  box-shadow:
+    0 16px 34px var(--salmon-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .submit:active:not(:disabled) {
