@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { planTrip } from './api'
 import RouteMap from './components/RouteMap'
 import TripForm from './components/TripForm'
+import RouteCards from './components/RouteCards'
 
 export default function App() {
   const [trip, setTrip] = useState(null)
@@ -36,7 +37,9 @@ export default function App() {
 
         <TripForm onSubmit={handlePlan} loading={loading} error={error} />
 
-        {trip && <p style={{ padding: '0 24px' }}>{trip.routes.length} routes found</p>}
+        {trip && (
+          <RouteCards routes={trip.routes} selectedRouteId={selectedRouteId} onSelect={setSelectedRouteId} />
+        )}
       </aside>
 
       <main className="map-area">
