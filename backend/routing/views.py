@@ -3,7 +3,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .serializers import TripRequestSerializer
+from .serializers import HeatmapRequestSerializer, TripRequestSerializer
+from .services.heatmap import build_heatmap
 from .services.tomtom import geocode
 from .services.trip import plan_trip
 
@@ -43,5 +44,22 @@ def trip(request):
             {"error": "A map or weather service is unavailable. Please try again."},
             status=status.HTTP_502_BAD_GATEWAY,
         )
+
+    return Response(result)
+
+
+@api_view(["POST"])
+def heatmap(request):
+    serializer = HeatmapRequestSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        result = build_heatmap(
+            serializer.validated_data["points"],
+            serializer.validated_data["departure"],
+            serializer.validated_data["weight_lb"],
+        )
+    except requests.RequestException:
+        return Response({"error": "Weather service is unavailable"}, status=status.HTTP_502_BAD_GATEWAY)
 
     return Response(result)

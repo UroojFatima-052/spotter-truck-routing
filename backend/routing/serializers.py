@@ -15,3 +15,13 @@ class TripRequestSerializer(serializers.Serializer):
         if value < timezone.now() - timedelta(minutes=5):
             raise serializers.ValidationError("Departure time must be in the future.")
         return value
+
+
+class HeatmapRequestSerializer(serializers.Serializer):
+    points = serializers.ListField(
+        child=serializers.ListField(child=serializers.FloatField(), min_length=2, max_length=2),
+        min_length=1,
+        max_length=2000,
+    )
+    departure = serializers.DateTimeField()
+    weight_lb = serializers.FloatField(min_value=1, max_value=200000)
