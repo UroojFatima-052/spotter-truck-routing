@@ -5,7 +5,7 @@ export default function App() {
         <header className="brand">
           <div className="brand-mark">🚚</div>
           <div>
-            <h1 className="brand-name">SafeHaul</h1>
+            <h1 className="brand-name">Driftline</h1>
             <p className="brand-tagline">Weather-aware truck routing</p>
           </div>
         </header>
