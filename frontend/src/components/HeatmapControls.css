@@ -1,0 +1,147 @@
+.heatmap-controls {
+  position: absolute;
+  left: 16px;
+  bottom: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 340px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow);
+}
+
+.hc-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hc-title {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.hc-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.hc-status {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.hc-status.error {
+  color: #a1282d;
+}
+
+.hc-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 3px;
+  border-radius: 9px;
+  background: var(--surface-alt);
+}
+
+.hc-metrics button {
+  padding: 6px 0;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hc-metrics button.active {
+  background: var(--surface);
+  color: var(--teal-800);
+  box-shadow: 0 1px 4px rgba(6, 42, 53, 0.12);
+}
+
+.hc-time {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.hc-time span {
+  color: var(--muted);
+}
+
+.hc-slider {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--teal-800);
+  cursor: pointer;
+}
+
+.hc-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -6px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.legend-levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 11px;
+}
+
+.legend-levels span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend-levels i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.legend-scale {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.legend-bar {
+  height: 8px;
+  border-radius: 999px;
+}
+
+.legend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.legend-unit {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .heatmap-controls {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+  }
+}
