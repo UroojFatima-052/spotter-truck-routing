@@ -1,14 +1,46 @@
-import { useState } from 'react'
-import { planTrip } from './api'
+import { useRef, useState } from 'react'
+import { fetchHeatmap, planTrip } from './api'
+import RouteCards from './components/RouteCards'
 import RouteMap from './components/RouteMap'
 import TripForm from './components/TripForm'
-import RouteCards from './components/RouteCards'
 
 export default function App() {
   const [trip, setTrip] = useState(null)
   const [selectedRouteId, setSelectedRouteId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const [heatmap, setHeatmap] = useState(null)
+  const [heatmapLoading, setHeatmapLoading] = useState(false)
+  const [heatmapError, setHeatmapError] = useState('')
+  const [hourIndex, setHourIndex] = useState(0)
+  const [showHeatmap, setShowHeatmap] = useState(true)
+  const [heatmapMetric, setHeatmapMetric] = useState('wind')
+  const latestHeatmapRequest = useRef(0)
+
+  async function loadHeatmap(result) {
+    const requestId = ++latestHeatmapRequest.current
+    setHeatmap(null)
+    setHourIndex(0)
+    setHeatmapError('')
+    setHeatmapLoading(true)
+
+    try {
+      const points = result.routes.flatMap((route) => route.checkpoints.map((stop) => [stop.lat, stop.lon]))
+      const data = await fetchHeatmap({ points, departure: result.departure, weight_lb: result.weight_lb })
+      if (requestId === latestHeatmapRequest.current) {
+        setHeatmap(data)
+      }
+    } catch (err) {
+      if (requestId === latestHeatmapRequest.current) {
+        setHeatmapError(err.message)
+      }
+    } finally {
+      if (requestId === latestHeatmapRequest.current) {
+        setHeatmapLoading(false)
+      }
+    }
+  }
 
   async function handlePlan(request) {
     setLoading(true)
@@ -17,6 +49,7 @@ export default function App() {
       const result = await planTrip(request)
       setTrip(result)
       setSelectedRouteId(result.recommended_route_id)
+      loadHeatmap(result)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -43,7 +76,15 @@ export default function App() {
       </aside>
 
       <main className="map-area">
-        <RouteMap trip={trip} selectedRouteId={selectedRouteId} onSelectRoute={setSelectedRouteId} />
+        <RouteMap
+          trip={trip}
+          selectedRouteId={selectedRouteId}
+          onSelectRoute={setSelectedRouteId}
+          heatmap={heatmap}
+          hourIndex={hourIndex}
+          showHeatmap={showHeatmap}
+          heatmapMetric={heatmapMetric}
+        />
       </main>
     </div>
   )

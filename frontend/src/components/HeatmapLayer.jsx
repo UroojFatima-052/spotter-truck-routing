@@ -1,31 +1,29 @@
 import { Pane, Rectangle } from 'react-leaflet'
-import { RISK_COLORS, RISK_LEVELS } from '../risk'
+import { colorFor } from '../heatmapScales'
 
-export default function HeatmapLayer({ heatmap, hourIndex }) {
+export default function HeatmapLayer({ heatmap, hourIndex, metric }) {
   const half = heatmap.cell_size / 2
-  const riskThisHour = heatmap.risk[hourIndex]
+  const valuesThisHour = heatmap[metric][hourIndex]
 
   return (
     <Pane name="heatmap" style={{ zIndex: 350 }}>
-      {heatmap.cells.map(([lat, lon], i) => {
-        const score = riskThisHour[i]
-        const level = score === null ? 'Unknown' : RISK_LEVELS[score]
-        return (
-          <Rectangle
-            key={i}
-            bounds={[
-              [lat - half, lon - half],
-              [lat + half, lon + half],
-            ]}
-            interactive={false}
-            pathOptions={{
-              stroke: false,
-              fillColor: RISK_COLORS[level],
-              fillOpacity: score ? 0.45 : 0.12,
-            }}
-          />
-        )
-      })}
+      {heatmap.cells.map(([lat, lon], i) => (
+        <Rectangle
+          key={i}
+          bounds={[
+            [lat - half, lon - half],
+            [lat + half, lon + half],
+          ]}
+          interactive={false}
+          pathOptions={{
+            color: '#ffffff',
+            weight: 1,
+            opacity: 0.7,
+            fillColor: colorFor(metric, valuesThisHour[i]),
+            fillOpacity: 0.5,
+          }}
+        />
+      ))}
     </Pane>
   )
 }

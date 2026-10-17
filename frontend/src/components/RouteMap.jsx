@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { CircleMarker, MapContainer, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import { formatDateTime } from '../format'
 import { RISK_COLORS } from '../risk'
+import HeatmapLayer from './HeatmapLayer'
 import './RouteMap.css'
 
 const US_CENTER = [39.5, -98.35]
@@ -43,7 +44,7 @@ function StopDetails({ stop }) {
   )
 }
 
-export default function RouteMap({ trip, selectedRouteId, onSelectRoute }) {
+export default function RouteMap({ trip, selectedRouteId, onSelectRoute, heatmap, hourIndex, showHeatmap, heatmapMetric }) {
   const routes = trip?.routes ?? []
   const selected = routes.find((route) => route.id === selectedRouteId)
 
@@ -54,6 +55,8 @@ export default function RouteMap({ trip, selectedRouteId, onSelectRoute }) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <FitToTrip trip={trip} />
+
+      {heatmap && showHeatmap && <HeatmapLayer heatmap={heatmap} hourIndex={hourIndex} metric={heatmapMetric} />}
 
       {routes.map((route) => {
         const isSelected = route.id === selectedRouteId
