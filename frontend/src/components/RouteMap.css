@@ -1,0 +1,46 @@
+.route-map {
+  height: 100%;
+  width: 100%;
+}
+
+.stop-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+
+.stop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stop-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.stop-mile {
+  font-weight: 700;
+}
+
+.stop-eta {
+  color: var(--muted);
+}
+
+.stop-weather {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.stop-cause {
+  font-size: 12px;
+  text-transform: capitalize;
+}
