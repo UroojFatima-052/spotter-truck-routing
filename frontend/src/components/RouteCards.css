@@ -1,42 +1,50 @@
 .route-cards {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 4px 24px 24px;
+  gap: 10px;
+  padding: 18px 22px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 .cards-header h2 {
   margin: 0;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .cards-header p {
-  margin: 4px 0 0;
-  font-size: 13px;
+  margin: 4px 0 4px;
+  font-size: 12px;
   color: var(--muted);
+}
+
+.cards-header strong {
+  color: var(--navy);
 }
 
 .route-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+  gap: 11px;
+  padding: 14px 15px;
+  border: 1px solid var(--field-line);
+  border-radius: 18px;
+  background: var(--field);
+  color: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s, border-color 0.15s, background 0.15s;
 }
 
 .route-card:hover {
-  border-color: var(--teal-600);
+  transform: translateY(-1px);
+  border-color: var(--glass-line);
 }
 
 .route-card.selected {
-  border-color: var(--teal-800);
-  box-shadow: var(--shadow);
+  border-color: var(--salmon-deep);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 14px 32px var(--shadow);
 }
 
 .card-top {
@@ -47,7 +55,8 @@
 }
 
 .route-name {
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .badge {
@@ -58,12 +67,12 @@
 }
 
 .badge.recommended {
-  background: var(--amber-soft);
-  color: #8a5a00;
+  background: var(--seafoam);
+  color: var(--seafoam-ink);
 }
 
 .badge.blocked {
-  background: #fbe9ef;
+  background: rgba(109, 26, 92, 0.1);
   color: var(--risk-notravel);
 }
 
@@ -76,35 +85,43 @@
 .stats div {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .stat-value {
-  font-size: 15px;
-  font-weight: 700;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .stat-label {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--faint);
 }
 
 .risk-bar {
   display: flex;
-  height: 8px;
+  gap: 2px;
+  height: 5px;
   overflow: hidden;
   border-radius: 999px;
-  background: var(--surface-alt);
+  background: var(--field-line);
+}
+
+.risk-bar span {
+  border-radius: 999px;
 }
 
 .risk-figures {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
   color: var(--muted);
 }
 
 .note {
   margin: 0;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--faint);
 }
