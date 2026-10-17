@@ -3,6 +3,7 @@ import { fetchHeatmap, planTrip } from './api'
 import RouteCards from './components/RouteCards'
 import RouteMap from './components/RouteMap'
 import TripForm from './components/TripForm'
+import HeatmapControls from './components/HeatmapControls'
 
 export default function App() {
   const [trip, setTrip] = useState(null)
@@ -15,7 +16,7 @@ export default function App() {
   const [heatmapError, setHeatmapError] = useState('')
   const [hourIndex, setHourIndex] = useState(0)
   const [showHeatmap, setShowHeatmap] = useState(true)
-  const [heatmapMetric, setHeatmapMetric] = useState('wind')
+  const [heatmapMetric, setHeatmapMetric] = useState('risk')
   const latestHeatmapRequest = useRef(0)
 
   async function loadHeatmap(result) {
@@ -84,6 +85,17 @@ export default function App() {
           hourIndex={hourIndex}
           showHeatmap={showHeatmap}
           heatmapMetric={heatmapMetric}
+        />
+        <HeatmapControls
+          heatmap={heatmap}
+          loading={heatmapLoading}
+          error={heatmapError}
+          hourIndex={hourIndex}
+          onHourChange={setHourIndex}
+          metric={heatmapMetric}
+          onMetricChange={setHeatmapMetric}
+          visible={showHeatmap}
+          onToggle={setShowHeatmap}
         />
       </main>
     </div>

@@ -145,3 +145,28 @@
     width: auto;
   }
 }
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-row .legend-bar {
+  flex: 1;
+}
+
+.legend-none {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.legend-none i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}

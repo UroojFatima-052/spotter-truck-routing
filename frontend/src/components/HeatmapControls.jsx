@@ -17,12 +17,20 @@ function Legend({ metric }) {
     )
   }
 
-  const { stops, unit } = HEATMAP_METRICS[metric]
+  const { stops, unit, none } = HEATMAP_METRICS[metric]
   const gradient = `linear-gradient(to right, ${stops.map(([, color]) => color).join(', ')})`
 
   return (
     <div className="legend-scale">
-      <div className="legend-bar" style={{ background: gradient }} />
+      <div className="legend-row">
+        {none && (
+          <span className="legend-none">
+            <i style={{ background: none }} />
+            None
+          </span>
+        )}
+        <div className="legend-bar" style={{ background: gradient }} />
+      </div>
       <div className="legend-labels">
         {stops.map(([value]) => (
           <span key={value}>{value}</span>
