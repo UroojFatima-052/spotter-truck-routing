@@ -50,8 +50,8 @@ export default function RouteMap({ trip, selectedRouteId, onSelectRoute }) {
   return (
     <MapContainer center={US_CENTER} zoom={4} preferCanvas className="route-map">
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <FitToTrip trip={trip} />
 

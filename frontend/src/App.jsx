@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { planTrip } from './api'
+import RouteMap from './components/RouteMap'
 import TripForm from './components/TripForm'
 
 export default function App() {
   const [trip, setTrip] = useState(null)
+  const [selectedRouteId, setSelectedRouteId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -13,6 +15,7 @@ export default function App() {
     try {
       const result = await planTrip(request)
       setTrip(result)
+      setSelectedRouteId(result.recommended_route_id)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -36,7 +39,9 @@ export default function App() {
         {trip && <p style={{ padding: '0 24px' }}>{trip.routes.length} routes found</p>}
       </aside>
 
-      <main className="map-area"></main>
+      <main className="map-area">
+        <RouteMap trip={trip} selectedRouteId={selectedRouteId} onSelectRoute={setSelectedRouteId} />
+      </main>
     </div>
   )
 }
