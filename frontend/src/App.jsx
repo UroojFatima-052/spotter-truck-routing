@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react'
 import { fetchHeatmap, planTrip } from './api'
+import HeatmapControls from './components/HeatmapControls'
 import RouteCards from './components/RouteCards'
 import RouteMap from './components/RouteMap'
 import TripForm from './components/TripForm'
-import HeatmapControls from './components/HeatmapControls'
+import { formatDuration } from './format'
 
 export default function App() {
   const [trip, setTrip] = useState(null)
@@ -18,6 +19,8 @@ export default function App() {
   const [showHeatmap, setShowHeatmap] = useState(true)
   const [heatmapMetric, setHeatmapMetric] = useState('risk')
   const latestHeatmapRequest = useRef(0)
+
+  const selectedRoute = trip?.routes.find((route) => route.id === selectedRouteId)
 
   async function loadHeatmap(result) {
     const requestId = ++latestHeatmapRequest.current
@@ -60,22 +63,6 @@ export default function App() {
 
   return (
     <div className="app">
-      <aside className="sidebar">
-        <header className="brand">
-          <div className="brand-mark">🚚</div>
-          <div>
-            <h1 className="brand-name">Driftline</h1>
-            <p className="brand-tagline">Weather-aware truck routing</p>
-          </div>
-        </header>
-
-        <TripForm onSubmit={handlePlan} loading={loading} error={error} />
-
-        {trip && (
-          <RouteCards routes={trip.routes} selectedRouteId={selectedRouteId} onSelect={setSelectedRouteId} />
-        )}
-      </aside>
-
       <main className="map-area">
         <RouteMap
           trip={trip}
@@ -86,6 +73,18 @@ export default function App() {
           showHeatmap={showHeatmap}
           heatmapMetric={heatmapMetric}
         />
+        <div className="ambient" />
+
+        {trip && selectedRoute && (
+          <div className="trip-pill glass">
+            {trip.origin.name} → {trip.destination.name}
+            <i />
+            <span>{selectedRoute.distance_miles} mi</span>
+            <i />
+            <span>{formatDuration(selectedRoute.duration_s)}</span>
+          </div>
+        )}
+
         <HeatmapControls
           heatmap={heatmap}
           loading={heatmapLoading}
@@ -98,6 +97,29 @@ export default function App() {
           onToggle={setShowHeatmap}
         />
       </main>
+
+      <aside className="sidebar glass">
+        <header className="brand">
+          <div className="brand-mark">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 17c4-1 6-6 9-10s6-4 9-4" />
+              <circle cx="3" cy="17" r="2" />
+              <circle cx="21" cy="3" r="1.5" />
+              <path d="M8 21h13" />
+            </svg>
+          </div>
+          <div>
+            <h1 className="brand-name">Driftline</h1>
+            <p className="brand-tagline">Weather-aware truck routing</p>
+          </div>
+        </header>
+
+        <TripForm onSubmit={handlePlan} loading={loading} error={error} />
+
+        {trip && (
+          <RouteCards routes={trip.routes} selectedRouteId={selectedRouteId} onSelect={setSelectedRouteId} />
+        )}
+      </aside>
     </div>
   )
 }

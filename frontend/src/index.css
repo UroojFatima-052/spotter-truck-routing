@@ -1,31 +1,37 @@
 :root {
-  /* Brand */
-  --teal-900: #062a35;
-  --teal-800: #0b3b4a;
-  --teal-700: #12505f;
-  --teal-600: #1b6575;
-  --amber: #f5a524;
-  --amber-soft: #fff4dd;
+  /* Palette: sea-foam, salmon, navy */
+  --seafoam: #aed6dc;
+  --seafoam-ink: #1f3a3f;
+  --salmon: #ff9a8d;
+  --salmon-deep: #ff7f70;
+  --salmon-glow: rgba(255, 154, 141, 0.45);
+  --navy: #4a536b;
+  --navy-soft: rgba(74, 83, 107, 0.14);
 
-  /* Neutrals */
-  --ink: #0f1c22;
-  --muted: #5d6f76;
-  --line: #dbe4e7;
-  --surface: #ffffff;
-  --surface-alt: #f4f7f8;
+  /* Text */
+  --ink: #2b3144;
+  --muted: #5a6278;
+  --faint: #8b92a4;
+
+  /* Glass */
+  --glass-bg: linear-gradient(140deg, rgba(252, 255, 255, 0.64), rgba(252, 255, 255, 0.36));
+  --glass-line: rgba(255, 255, 255, 0.85);
+  --field: rgba(255, 255, 255, 0.58);
+  --field-line: rgba(43, 49, 68, 0.09);
+  --shadow: rgba(43, 49, 68, 0.16);
 
   /* Risk levels */
-  --risk-low: #22a06b;
-  --risk-moderate: #e2b203;
-  --risk-high: #f18a1c;
-  --risk-severe: #e5484d;
-  --risk-notravel: #7a1f3d;
-  --risk-unknown: #9aa8ad;
+  --risk-low: #2fbf8f;
+  --risk-moderate: #f5b301;
+  --risk-high: #f97316;
+  --risk-severe: #dc2626;
+  --risk-notravel: #6d1a5c;
+  --risk-unknown: #9aa3b2;
 
-  --radius: 14px;
-  --shadow: 0 8px 24px rgba(6, 42, 53, 0.12);
+  --map-bg: #dcecee;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  font-family: 'Manrope', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
@@ -42,7 +48,7 @@ body,
 }
 
 body {
-  background: var(--surface-alt);
+  background: var(--map-bg);
 }
 
 button,
@@ -51,69 +57,178 @@ select {
   font: inherit;
 }
 
-/* Page layout: sidebar on the left, map fills the rest */
+/* ---------- Layout: full-screen map, glass panels float on top ---------- */
 .app {
-  display: grid;
-  grid-template-columns: 420px 1fr;
+  position: relative;
   height: 100vh;
-}
-
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  background: var(--surface);
-  border-right: 1px solid var(--line);
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .map-area {
-  position: relative;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
 }
 
-/* Brand header */
+.ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  pointer-events: none;
+  background:
+    radial-gradient(40vw 40vw at 8% 18%, var(--salmon-glow), transparent 70%),
+    radial-gradient(35vw 35vw at 92% 88%, rgba(174, 214, 220, 0.7), transparent 70%);
+  opacity: 0.6;
+}
+
+.sidebar {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  bottom: 20px;
+  z-index: 1000;
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border-radius: 26px;
+}
+
+/* ---------- Glass ---------- */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid var(--glass-line);
+  box-shadow:
+    0 30px 70px var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* ---------- Brand ---------- */
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 22px 24px;
-  background: linear-gradient(135deg, var(--teal-900), var(--teal-700));
-  color: white;
+  padding: 22px 22px 14px;
 }
 
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  flex: none;
+  width: 38px;
+  height: 38px;
   border-radius: 12px;
-  background: var(--amber);
-  font-size: 22px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--navy), var(--salmon-deep));
+  box-shadow: 0 8px 22px var(--salmon-glow);
 }
 
 .brand-name {
   margin: 0;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .brand-tagline {
-  margin: 2px 0 0;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.72);
+  margin: 1px 0 0;
+  font-size: 12px;
+  color: var(--muted);
 }
 
-/* On small screens, stack the sidebar above the map */
+/* ---------- Trip pill ---------- */
+.trip-pill {
+  position: absolute;
+  top: 20px;
+  left: calc(50% + 200px);
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.trip-pill span {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.trip-pill i {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--faint);
+}
+
+/* ---------- Map styling ---------- */
+/* Tint only the map images, so our routes and risk colors stay true */
+.leaflet-tile-pane {
+  filter: grayscale(1) sepia(0.35) hue-rotate(142deg) saturate(1.15) brightness(1.06) contrast(0.84);
+}
+
+.leaflet-container {
+  font-family: inherit;
+  background: var(--map-bg);
+}
+
+.leaflet-control-zoom {
+  overflow: hidden;
+  border: 1px solid var(--glass-line) !important;
+  border-radius: 14px !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 12px 30px var(--shadow) !important;
+}
+
+.leaflet-control-zoom a {
+  background: rgba(252, 255, 255, 0.6) !important;
+  color: var(--ink) !important;
+  border-bottom-color: var(--glass-line) !important;
+}
+
+.leaflet-control-attribution {
+  background: transparent !important;
+  color: var(--faint) !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-line);
+  color: var(--ink);
+  box-shadow: 0 18px 40px var(--shadow);
+}
+
+/* ---------- Phones: map on top, panel below ---------- */
 @media (max-width: 900px) {
   .app {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 60vh;
     height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .map-area {
+    position: relative;
+    height: 60vh;
   }
 
   .sidebar {
-    border-right: none;
-    border-bottom: 1px solid var(--line);
+    position: relative;
+    inset: auto;
+    width: auto;
+    margin: -40px 12px 12px;
+  }
+
+  .trip-pill {
+    display: none;
   }
 }
