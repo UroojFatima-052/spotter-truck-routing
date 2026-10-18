@@ -1,14 +1,48 @@
-from django.test import SimpleTestCase
+from datetime import timedelta
 
+from django.test import SimpleTestCase
+from django.utils import timezone
+
+from .serializers import TripRequestSerializer
 from .services.risk import (
     HIGH, LOW, MODERATE, NO_TRAVEL, SEVERE,
     classify, rain_level, snow_level, wind_level,
 )
+from .services.scoring import rank_routes, summarize_risk
 
+
+# ---------- Helpers ----------
 
 def weather(wind=0, rain=0, snow=0):
     return {"wind_mph": wind, "rain_in": rain, "snow_in": snow}
 
+
+def stop(score, miles=25):
+    level = "Unknown" if score is None else ["Low", "Moderate", "High", "Severe", "No Travel"][score]
+    return {"covers_miles": miles, "risk": {"level": level, "score": score, "cause": None}}
+
+
+def route(route_id, scores, duration_s=3600):
+    return {
+        "id": route_id,
+        "duration_s": duration_s,
+        "risk_summary": summarize_risk([stop(score) for score in scores]),
+    }
+
+
+def trip_data(**overrides):
+    data = {
+        "origin": "Dallas, TX",
+        "destination": "Denver, CO",
+        "departure": (timezone.now() + timedelta(hours=2)).isoformat(),
+        "weight_lb": 35000,
+        "interval_miles": 25,
+    }
+    data.update(overrides)
+    return data
+
+
+# ---------- Risk rules ----------
 
 class WindLevelTests(SimpleTestCase):
     def test_thresholds(self):
@@ -70,21 +104,8 @@ class ClassifyTests(SimpleTestCase):
     def test_missing_weather_is_unknown(self):
         self.assertEqual(classify(None, 10000)["level"], "Unknown")
 
-from .services.scoring import rank_routes, summarize_risk
 
-
-def stop(score, miles=25):
-    level = "Unknown" if score is None else ["Low", "Moderate", "High", "Severe", "No Travel"][score]
-    return {"covers_miles": miles, "risk": {"level": level, "score": score, "cause": None}}
-
-
-def route(route_id, scores, duration_s=3600):
-    return {
-        "id": route_id,
-        "duration_s": duration_s,
-        "risk_summary": summarize_risk([stop(score) for score in scores]),
-    }
-
+# ---------- Route scoring and ranking ----------
 
 class SummarizeRiskTests(SimpleTestCase):
     def test_counts_miles_per_level(self):
@@ -126,3 +147,23 @@ class RankRoutesTests(SimpleTestCase):
         blocked = route("blocked", [4, 0])
         severe = route("severe", [3, 3])
         self.assertEqual(self.best([blocked, severe]), "severe")
+
+
+# ---------- Request validation ----------
+
+class TripRequestSerializerTests(SimpleTestCase):
+    def test_valid_trip_passes(self):
+        self.assertTrue(TripRequestSerializer(data=trip_data()).is_valid())
+
+    def test_same_origin_and_destination_is_rejected(self):
+        serializer = TripRequestSerializer(data=trip_data(destination=" dallas, tx "))
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("destination", serializer.errors)
+
+    def test_past_departure_is_rejected(self):
+        past = (timezone.now() - timedelta(hours=1)).isoformat()
+        self.assertFalse(TripRequestSerializer(data=trip_data(departure=past)).is_valid())
+
+    def test_departure_beyond_forecast_is_rejected(self):
+        far = (timezone.now() + timedelta(days=10)).isoformat()
+        self.assertFalse(TripRequestSerializer(data=trip_data(departure=far)).is_valid())
