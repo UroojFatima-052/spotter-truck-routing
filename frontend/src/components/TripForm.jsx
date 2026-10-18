@@ -2,12 +2,23 @@ import { useState } from 'react'
 import './TripForm.css'
 
 const INTERVALS = [10, 25, 50]
+const MAX_DAYS_AHEAD = 5
+
+function toLocalInput(date) {
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
 
 function nextHourLocal() {
   const date = new Date()
   date.setHours(date.getHours() + 1, 0, 0, 0)
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:00`
+  return toLocalInput(date)
+}
+
+function latestDepartureLocal() {
+  const date = new Date()
+  date.setDate(date.getDate() + MAX_DAYS_AHEAD)
+  return toLocalInput(date)
 }
 
 function weightHint(weight) {
@@ -65,7 +76,14 @@ export default function TripForm({ onSubmit, loading, error }) {
       <div className="row">
         <label className="field">
           <span className="field-label">Departure</span>
-          <input type="datetime-local" value={departure} onChange={(e) => setDeparture(e.target.value)} required />
+          <input
+            type="datetime-local"
+            value={departure}
+            min={toLocalInput(new Date())}
+            max={latestDepartureLocal()}
+            onChange={(e) => setDeparture(e.target.value)}
+            required
+          />
         </label>
 
         <label className="field">
