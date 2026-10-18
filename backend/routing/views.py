@@ -1,3 +1,5 @@
+import logging
+
 import requests
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -7,6 +9,8 @@ from .serializers import HeatmapRequestSerializer, TripRequestSerializer
 from .services.heatmap import build_heatmap
 from .services.tomtom import geocode
 from .services.trip import plan_trip
+
+logger = logging.getLogger(__name__)
 
 
 @api_view(["GET"])
@@ -25,6 +29,7 @@ def geocode_place(request):
     except ValueError as error:
         return Response({"error": str(error)}, status=status.HTTP_404_NOT_FOUND)
     except requests.RequestException:
+        logger.exception("Geocoding failed for %r", query)
         return Response({"error": "Location service is unavailable"}, status=status.HTTP_502_BAD_GATEWAY)
 
     return Response(place)
@@ -38,11 +43,18 @@ def trip(request):
     try:
         result = plan_trip(**serializer.validated_data)
     except ValueError as error:
-        return Response({"error": str(error)}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": str(error)}, status=status.HTTP_400_BAD_REQUEST)
     except requests.RequestException:
+        logger.exception("External service failed while planning a trip")
         return Response(
             {"error": "A map or weather service is unavailable. Please try again."},
             status=status.HTTP_502_BAD_GATEWAY,
+        )
+    except Exception:
+        logger.exception("Unexpected error while planning a trip")
+        return Response(
+            {"error": "Something unexpected went wrong while planning this trip. Please try different places."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
     return Response(result)
@@ -60,6 +72,10 @@ def heatmap(request):
             serializer.validated_data["weight_lb"],
         )
     except requests.RequestException:
+        logger.exception("Weather service failed while building the heatmap")
         return Response({"error": "Weather service is unavailable"}, status=status.HTTP_502_BAD_GATEWAY)
+    except Exception:
+        logger.exception("Unexpected error while building the heatmap")
+        return Response({"error": "Could not build the weather forecast"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response(result)
