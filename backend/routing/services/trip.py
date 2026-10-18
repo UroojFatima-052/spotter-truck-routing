@@ -2,19 +2,29 @@ from datetime import datetime
 
 from django.utils import timezone
 
-from .checkpoints import build_checkpoints
+from .checkpoints import build_checkpoints, distance_miles
 from .risk import classify
 from .scoring import rank_routes, summarize_risk
 from .tomtom import geocode, get_truck_routes
 from .weather import get_forecasts, round_location, weather_at
 
 MAX_MAP_POINTS = 1500
+MIN_TRIP_MILES = 1
 
 
 def plan_trip(origin, destination, departure, weight_lb, interval_miles):
     """Run the whole trip: places, routes, stops, weather, risk, best route."""
     origin_place = geocode(origin)
     destination_place = geocode(destination)
+
+    gap = distance_miles(
+        (origin_place["lat"], origin_place["lon"]),
+        (destination_place["lat"], destination_place["lon"]),
+    )
+    if gap < MIN_TRIP_MILES:
+        raise ValueError(
+            f"'{origin}' and '{destination}' are the same place. Please pick two different locations."
+        )
 
     depart_at = "now" if departure <= timezone.now() else departure.replace(microsecond=0).isoformat()
     routes = get_truck_routes(origin_place, destination_place, depart_at, weight_lb)
