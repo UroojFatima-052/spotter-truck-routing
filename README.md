@@ -4,7 +4,7 @@ Weather-aware truck routing. Enter a trip, departure time and load weight, and D
 
 **Live app:** https://driftline-truck.netlify.app
 **API health check:** https://spotter-truck-routing-eva2.onrender.com/api/health/
-**Walkthrough video:** [Loom link]
+**Walkthrough video:** https://www.loom.com/share/ef3dfd6497454945967aa501e5c31a01
 
 > The backend runs on Render's free tier. If the first request is slow, the server may be waking up; give it a few seconds.
 
