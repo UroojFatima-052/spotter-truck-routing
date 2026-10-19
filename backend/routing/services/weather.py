@@ -1,3 +1,4 @@
+import time
 from datetime import timedelta
 
 import requests
@@ -7,11 +8,18 @@ FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 BATCH_SIZE = 50
 CACHE_SECONDS = 30 * 60
 FORECAST_DAYS = 7
+MAX_ATTEMPTS = 3
+GRID_DEGREES = 0.1  # about 7 miles; close to the weather model's own grid size
+
+session = requests.Session()
 
 
 def round_location(lat, lon):
-    """Round to about 1 km so nearby points share one forecast."""
-    return round(lat, 2), round(lon, 2)
+    """Snap to a ~7 mile grid so nearby points share one forecast (fewer API calls)."""
+    return (
+        round(round(lat / GRID_DEGREES) * GRID_DEGREES, 2),
+        round(round(lon / GRID_DEGREES) * GRID_DEGREES, 2),
+    )
 
 
 def get_forecasts(locations):
@@ -59,7 +67,7 @@ def _cache_key(location):
 
 
 def _fetch_batch(batch):
-    """One Open-Meteo call for up to 50 locations."""
+    """One Open-Meteo call for up to 50 locations, retrying if we hit the rate limit."""
     params = {
         "latitude": ",".join(str(lat) for lat, _ in batch),
         "longitude": ",".join(str(lon) for _, lon in batch),
@@ -69,7 +77,14 @@ def _fetch_batch(batch):
         "timezone": "GMT",
         "forecast_days": FORECAST_DAYS,
     }
-    response = requests.get(FORECAST_URL, params=params, timeout=20)
+
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        response = session.get(FORECAST_URL, params=params, timeout=20)
+        if response.status_code != 429 or attempt == MAX_ATTEMPTS:
+            break
+        wait = int(response.headers.get("Retry-After", 2 * attempt))
+        time.sleep(min(wait, 10))
+
     response.raise_for_status()
 
     data = response.json()

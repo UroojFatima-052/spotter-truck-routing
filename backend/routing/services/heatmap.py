@@ -9,7 +9,7 @@ GRID_CELLS_ACROSS = 20
 MIN_STEP_DEGREES = 0.25
 PADDING_DEGREES = 0.5
 CORRIDOR_MILES = 60
-MAX_CELLS = 300
+MAX_CELLS = 200
 
 
 def build_heatmap(route_points, departure, weight_lb):
